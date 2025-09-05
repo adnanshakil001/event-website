@@ -1,421 +1,684 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Calendar, Clock, MapPin, Mail, Phone, Instagram, Linkedin, Twitter, Youtube, ArrowRight, Users, Mic2, Sparkles, ChevronDown, ExternalLink, CheckCircle2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataSphere 2025 | Data Science Club Event</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* CSS Reset and Global Styles */
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #111827;
+            --text-light: #f9fafb;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --bg-light: #ffffff;
+            --bg-off-white: #f9fafb;
+            --border-color: #e5e7eb;
+        }
 
-const EVENT = {
-  name: "Data Science Club Summit 2025",
-  tagline: "Learn • Build • Network — Turn data into impact",
-  start: "2025-10-01T09:00:00+05:30",
-  end: "2025-10-01T17:30:00+05:30",
-  venueName: "VIT Bhopal University",
-  venueAddress: "Kothrikalan, Sehore, Madhya Pradesh 466114",
-  mapsQuery: "VIT%20Bhopal%20University",
-  registrationLink: "https://forms.gle/replace-with-your-google-form", // or leave blank to use inline form
-  contactEmail: "dsc@vitbhopal.ac.in",
-  contactPhone: "+91 90000 00000",
-  socials: {
-    instagram: "https://instagram.com/yourclub",
-    linkedin: "https://linkedin.com/company/yourclub",
-    twitter: "https://x.com/yourclub",
-    youtube: "https://youtube.com/@yourclub"
-  }
-};
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-const SPEAKERS = [
-  {
-    name: "Dr. Ayesha Khan",
-    role: "Head of AI, DataNova Labs",
-    photo: "https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=800&auto=format&fit=crop",
-    bio: "Applied ML leader focused on trustworthy AI and real-world deployments.",
-    links: { linkedin: "https://linkedin.com/in/", twitter: "https://x.com/" }
-  },
-  {
-    name: "Rohit Sharma",
-    role: "Senior Data Scientist, FinEdge",
-    photo: "https://images.unsplash.com/photo-1602480371491-48b46e44b7eb?q=80&w=800&auto=format&fit=crop",
-    bio: "Time-series ninja, loves MLOps and forecasting at scale.",
-    links: { linkedin: "https://linkedin.com/in/", twitter: "https://x.com/" }
-  },
-  {
-    name: "Meera Iyer",
-    role: "Analytics Engineer, CloudFoundry",
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop",
-    bio: "Bridges data platforms and product teams for delightful insights.",
-    links: { linkedin: "https://linkedin.com/in/", twitter: "https://x.com/" }
-  }
-];
+        html {
+            scroll-behavior: smooth;
+        }
 
-const SESSIONS = [
-  { time: "09:00", title: "Check‑in & Breakfast", speaker: "—" },
-  { time: "09:45", title: "Opening Keynote: Data to Impact", speaker: "Dr. Ayesha Khan" },
-  { time: "10:30", title: "Workshop: From Notebook to API (FastAPI)", speaker: "Rohit Sharma" },
-  { time: "12:00", title: "Lunch & Networking", speaker: "—" },
-  { time: "13:15", title: "Panel: Career Paths in Data", speaker: "All Speakers" },
-  { time: "14:30", title: "Hands‑on: Feature Stores & MLOps", speaker: "Meera Iyer" },
-  { time: "16:00", title: "Lightning Demos + Q&A", speaker: "Community" },
-  { time: "17:00", title: "Closing & Group Photo", speaker: "Organizers" }
-];
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            line-height: 1.6;
+        }
 
-function useCountdown(targetISO) {
-  const target = useMemo(() => new Date(targetISO).getTime(), [targetISO]);
-  const [now, setNow] = useState(Date.now());
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
-  const diff = Math.max(0, target - now);
-  const s = Math.floor(diff / 1000);
-  const days = Math.floor(s / 86400);
-  const hours = Math.floor((s % 86400) / 3600);
-  const minutes = Math.floor((s % 3600) / 60);
-  const seconds = s % 60;
-  return { days, hours, minutes, seconds, over: diff === 0 };
-}
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
 
-function Chip({ icon: Icon, children }) {
-  return (
-    <span className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm shadow-sm backdrop-blur bg-white/70 border-black/10">
-      <Icon className="h-4 w-4" /> {children}
-    </span>
-  );
-}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-function Section({ id, title, subtitle, children }) {
-  return (
-    <section id={id} className="py-16 md:py-24" aria-label={title}>
-      <div className="mx-auto max-w-7xl px-4">
-        <div className="mb-10 md:mb-14">
-          <h2 className="text-2xl md:text-4xl font-extrabold tracking-tight">{title}</h2>
-          {subtitle && <p className="mt-2 text-base md:text-lg text-black/70">{subtitle}</p>}
-        </div>
-        {children}
-      </div>
-    </section>
-  );
-}
+        section {
+            padding: 80px 0;
+        }
 
-export default function EventSite() {
-  const { days, hours, minutes, seconds } = useCountdown(EVENT.start);
-  const [submitted, setSubmitted] = useState(false);
-  const formRef = useRef(null);
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: var(--secondary-color);
+        }
 
-  const handleSmoothScroll = (e, id) => {
-    e.preventDefault();
-    document.querySelector(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: -30px auto 50px;
+        }
 
-  const submitInline = (e) => {
-    e.preventDefault();
-    const form = formRef.current;
-    if (!form) return;
-    const data = Object.fromEntries(new FormData(form));
-    // Minimal client-side validation
-    if (!data.name || !data.email) {
-      alert("Please fill in your name and email.");
-      return;
-    }
-    setSubmitted(true);
-  };
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-sky-50 text-gray-900">
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-50 border-b border-black/5 bg-white/80 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="flex h-16 items-center justify-between">
-            <a href="#home" className="flex items-center gap-2 font-extrabold text-lg" onClick={(e)=>handleSmoothScroll(e, '#home')}>
-              <Sparkles className="h-5 w-5" /> DSC @ VIT Bhopal
-            </a>
-            <nav className="hidden md:flex items-center gap-6 text-sm">
-              {[
-                ["About", "#about"],
-                ["Speakers", "#speakers"],
-                ["Schedule", "#schedule"],
-                ["Register", "#register"],
-                ["Venue", "#venue"],
-              ].map(([label, href]) => (
-                <a key={href} href={href} onClick={(e)=>handleSmoothScroll(e, href)} className="hover:opacity-80">
-                  {label}
-                </a>
-              ))}
-            </nav>
-            <a
-              href="#register"
-              onClick={(e)=>handleSmoothScroll(e, '#register')}
-              className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-black text-white px-4 py-2 text-sm font-semibold shadow hover:shadow-md active:scale-[.98]"
-            >
-              Register Now <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-        </div>
-      </header>
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
 
-      {/* HERO */}
-      <section id="home" className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 [mask-image:radial-gradient(70%_70%_at_50%_0%,black,transparent)]">
-          <div className="absolute -top-24 left-1/2 h-72 w-[110vw] -translate-x-1/2 bg-gradient-to-r from-sky-300 via-fuchsia-300 to-emerald-300 blur-3xl opacity-30" />
-        </div>
-        <div className="mx-auto max-w-7xl px-4 py-16 md:py-24 lg:py-28">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <Chip icon={Calendar}>{new Date(EVENT.start).toLocaleString()}</Chip>
-              <h1 className="mt-4 text-4xl md:text-6xl font-extrabold tracking-tight">
-                {EVENT.name}
-              </h1>
-              <p className="mt-4 text-lg md:text-xl text-black/70 max-w-prose">
-                {EVENT.tagline}
-              </p>
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <a
-                  href="#register"
-                  onClick={(e)=>handleSmoothScroll(e, '#register')}
-                  className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-black text-white px-5 py-3 text-sm font-semibold shadow hover:shadow-md"
-                >
-                  Register Now <ArrowRight className="h-4 w-4" />
-                </a>
-                <div className="flex items-center gap-2 text-sm text-black/70">
-                  <MapPin className="h-4 w-4" /> {EVENT.venueName}
-                </div>
-              </div>
+        /* Navbar */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
 
-              {/* Countdown */}
-              <div className="mt-8 grid grid-cols-4 gap-3 max-w-md">
-                {[{label: 'Days', value: days},{label: 'Hours', value: hours},{label: 'Minutes', value: minutes},{label: 'Seconds', value: seconds}].map((b) => (
-                  <div key={b.label} className="rounded-2xl border border-black/10 bg-white/80 p-4 text-center shadow-sm">
-                    <div className="text-3xl font-extrabold tabular-nums">{String(b.value).padStart(2,'0')}</div>
-                    <div className="mt-1 text-xs uppercase tracking-wide text-black/60">{b.label}</div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: .1 }}>
-              <div className="relative rounded-3xl border border-black/10 bg-white p-6 shadow-xl">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="rounded-2xl bg-sky-50 p-4">
-                    <div className="flex items-center gap-2 text-sky-700"><Mic2 className="h-4 w-4"/> Keynotes</div>
-                    <p className="mt-2 font-semibold">Industry leaders on stage</p>
-                  </div>
-                  <div className="rounded-2xl bg-fuchsia-50 p-4">
-                    <div className="flex items-center gap-2 text-fuchsia-700"><Users className="h-4 w-4"/> Workshops</div>
-                    <p className="mt-2 font-semibold">Hands‑on guided labs</p>
-                  </div>
-                  <div className="rounded-2xl bg-emerald-50 p-4">
-                    <div className="flex items-center gap-2 text-emerald-700"><CheckCircle2 className="h-4 w-4"/> Certificates</div>
-                    <p className="mt-2 font-semibold">For active participants</p>
-                  </div>
-                  <div className="rounded-2xl bg-amber-50 p-4">
-                    <div className="flex items-center gap-2 text-amber-700"><Calendar className="h-4 w-4"/> Networking</div>
-                    <p className="mt-2 font-semibold">Meet peers & mentors</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+        .nav-logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
 
-      {/* ABOUT */}
-      <Section id="about" title="About the Event" subtitle="What you'll learn and why you should attend">
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-2">
-            <p className="leading-7 text-black/80">
-              The Data Science Club Summit is a one‑day, high‑energy event bringing together students,
-              researchers, and industry professionals. Expect practical sessions on MLOps, analytics engineering,
-              and production‑grade ML — plus real talk about careers, portfolios, and how to ship value with data.
-            </p>
-            <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-sm">
-              {[
-                "Hands‑on workshops guided by mentors",
-                "Keynotes on the latest tools and practices",
-                "Career panel and portfolio reviews",
-                "Project showcases and lightning demos",
-              ].map((pt) => (
-                <li key={pt} className="flex items-start gap-3 rounded-2xl border border-black/10 bg-white/70 p-3 shadow-sm">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none" />
-                  <span>{pt}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-3xl border border-black/10 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-2 text-sm text-black/70"><Clock className="h-4 w-4"/> {new Date(EVENT.end).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</div>
-            <div className="mt-2 font-semibold">One compact day, maximum value.</div>
-            <p className="mt-2 text-sm text-black/70">Bring your laptop for the hands‑on sessions. Basic Python helps, curiosity required.</p>
-          </div>
-        </div>
-      </Section>
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
 
-      {/* SPEAKERS */}
-      <Section id="speakers" title="Speakers & Mentors" subtitle="Learn from builders and practitioners">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SPEAKERS.map((sp) => (
-            <motion.div key={sp.name} whileHover={{ y: -4 }} className="group rounded-3xl border border-black/10 bg-white shadow-sm overflow-hidden">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img src={sp.photo} alt={sp.name} className="h-full w-full object-cover transition duration-300 group-hover:scale-105"/>
-              </div>
-              <div className="p-5">
-                <div className="font-semibold text-lg">{sp.name}</div>
-                <div className="text-sm text-black/60">{sp.role}</div>
-                <p className="mt-2 text-sm text-black/80">{sp.bio}</p>
-                <div className="mt-3 flex items-center gap-3 text-black/60">
-                  {sp.links?.linkedin && (
-                    <a href={sp.links.linkedin} target="_blank" rel="noreferrer" className="hover:text-black" aria-label={`${sp.name} on LinkedIn`}>
-                      <Linkedin className="h-4 w-4" />
-                    </a>
-                  )}
-                  {sp.links?.twitter && (
-                    <a href={sp.links.twitter} target="_blank" rel="noreferrer" className="hover:text-black" aria-label={`${sp.name} on X`}>
-                      <Twitter className="h-4 w-4" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 5px;
+            transition: color 0.3s ease;
+        }
 
-      {/* SCHEDULE */}
-      <Section id="schedule" title="Schedule & Agenda" subtitle="Plan your day">
-        <div className="rounded-3xl border border-black/10 bg-white shadow-sm overflow-hidden">
-          <details open className="border-b border-black/5">
-            <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left text-lg font-semibold">
-              Full Day — {new Date(EVENT.start).toLocaleDateString()} <ChevronDown className="h-5 w-5 shrink-0"/>
-            </summary>
-            <ul className="divide-y divide-black/5">
-              {SESSIONS.map((s, idx) => (
-                <li key={idx} className="grid grid-cols-[90px,1fr,200px] gap-3 px-5 py-4 text-sm max-md:grid-cols-1 max-md:gap-1">
-                  <div className="font-mono tabular-nums text-black/70">{s.time}</div>
-                  <div className="font-medium">{s.title}</div>
-                  <div className="text-black/60">{s.speaker}</div>
-                </li>
-              ))}
-            </ul>
-          </details>
-        </div>
-      </Section>
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
 
-      {/* REGISTER */}
-      <Section id="register" title="Register / Join Us" subtitle="Seats are limited — secure yours now">
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Option A: External link */}
-          <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-2 text-sm text-black/70">
-              <ExternalLink className="h-4 w-4"/> Quick registration
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        #hero {
+            height: 100vh;
+            background: linear-gradient(rgba(17, 24, 39, 0.7), rgba(17, 24, 39, 0.7)), url('https://placehold.co/1920x1080/111827/4f46e5?text=Data+Visualization') no-repeat center center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-light);
+            padding-top: 80px; /* Offset for navbar */
+        }
+        
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            margin-bottom: 30px;
+            color: rgba(249, 250, 251, 0.9);
+        }
+
+        /* About Section */
+        #about {
+            background-color: var(--bg-off-white);
+        }
+
+        .about-content {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .about-text {
+            flex: 1;
+        }
+        
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .about-text p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+        
+        .about-image {
+            flex: 1;
+            max-width: 500px;
+        }
+        
+        .about-image img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Speakers Section */
+        .speakers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .speaker-card {
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .speaker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .speaker-card img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 4px solid var(--border-color);
+        }
+
+        .speaker-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .speaker-card .title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .speaker-card .bio {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        /* Schedule Section */
+        #schedule {
+            background-color: var(--bg-off-white);
+        }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            max-width: 900px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .schedule-table th, .schedule-table td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .schedule-table th {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+        }
+        .schedule-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .schedule-time {
+            font-weight: 700;
+            color: var(--primary-color);
+            width: 150px;
+        }
+        .schedule-session h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        .schedule-session p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Registration Section */
+        .registration-form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--bg-light);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        
+        .register-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* Venue Section */
+        #venue {
+            background-color: var(--bg-off-white);
+        }
+
+        .venue-content {
+            display: flex;
+            gap: 50px;
+            align-items: flex-start;
+        }
+
+        .venue-details {
+            flex: 1;
+        }
+
+        .venue-map {
+            flex: 1.5;
+            height: 400px;
+        }
+        
+        .venue-map iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 12px;
+        }
+
+        .venue-details h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .venue-info {
+            list-style: none;
+        }
+        
+        .venue-info li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .venue-info li i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            width: 40px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        .footer-socials {
+            margin-bottom: 20px;
+        }
+
+        .footer-socials a {
+            color: var(--text-light);
+            font-size: 1.5rem;
+            margin: 0 15px;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-socials a:hover {
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-copyright {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* Simple hiding for mobile, as hamburger menu requires JS */
+            }
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            section {
+                padding: 60px 0;
+            }
+            .about-content, .venue-content {
+                flex-direction: column;
+            }
+            .about-image {
+                margin-top: 30px;
+            }
+            .venue-map {
+                margin-top: 30px;
+                height: 300px;
+            }
+            .schedule-table th, .schedule-table td {
+                padding: 15px;
+            }
+            .schedule-time {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Navbar -->
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="nav-logo">DataSphere '25</a>
+                <ul class="nav-links">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#speakers">Speakers</a></li>
+                    <li><a href="#schedule">Schedule</a></li>
+                    <li><a href="#register">Register</a></li>
+                    <li><a href="#venue">Venue</a></li>
+                </ul>
             </div>
-            <p className="mt-2 text-sm">Prefer a simple external form? Use the link below.</p>
-            <a
-              href={EVENT.registrationLink}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-black text-white px-5 py-3 text-sm font-semibold shadow hover:shadow-md"
-            >
-              Open Registration Form <ArrowRight className="h-4 w-4" />
-            </a>
-            <p className="mt-3 text-xs text-black/60">Replace the link in QUICK SETTINGS with your Google Form / Typeform / etc.</p>
-          </div>
+        </nav>
+    </header>
 
-          {/* Option B: Inline form */}
-          <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-2 text-sm text-black/70"><Users className="h-4 w-4"/> Inline registration</div>
-            {!submitted ? (
-              <form ref={formRef} onSubmit={submitInline} className="mt-4 grid grid-cols-1 gap-3">
-                <div>
-                  <label className="text-sm">Full Name</label>
-                  <input name="name" required className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-inner outline-none focus:ring-2 focus:ring-sky-300" placeholder="Your name"/>
-                </div>
-                <div>
-                  <label className="text-sm">Email</label>
-                  <input type="email" name="email" required className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-inner outline-none focus:ring-2 focus:ring-sky-300" placeholder="you@vitbhopal.ac.in"/>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm">Year</label>
-                    <select name="year" className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-inner outline-none focus:ring-2 focus:ring-sky-300">
-                      <option>First</option>
-                      <option>Second</option>
-                      <option>Third</option>
-                      <option>Fourth</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-sm">Track Interest</label>
-                    <select name="track" className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-inner outline-none focus:ring-2 focus:ring-sky-300">
-                      <option>ML Basics</option>
-                      <option>MLOps</option>
-                      <option>Analytics</option>
-                      <option>GenAI</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm">Message (optional)</label>
-                  <textarea name="message" rows={3} className="mt-1 w-full rounded-xl border border-black/10 bg-white px-3 py-2 shadow-inner outline-none focus:ring-2 focus:ring-sky-300" placeholder="Tell us what you want to learn"/>
-                </div>
-                <button type="submit" className="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl border border-black/10 bg-black px-5 py-3 text-sm font-semibold text-white shadow hover:shadow-md">
-                  Submit Registration <ArrowRight className="h-4 w-4" />
-                </button>
-                <p className="text-xs text-black/50">This demo stores locally only. Connect to Google Sheets / Airtable / Firebase for production.</p>
-              </form>
-            ) : (
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">
-                <div className="font-semibold">You're in! 🎉</div>
-                <p className="text-sm">We've received your details. Check your inbox for updates.</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </Section>
-
-      {/* VENUE / CONTACT */}
-      <Section id="venue" title="Venue & Contact" subtitle="How to reach us and stay connected">
-        <div className="grid lg:grid-cols-2 gap-6">
-          <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-2 text-sm text-black/70"><MapPin className="h-4 w-4"/> {EVENT.venueName}</div>
-            <div className="mt-1 text-sm">{EVENT.venueAddress}</div>
-            <div className="mt-4 aspect-video overflow-hidden rounded-2xl border border-black/10">
-              <iframe
-                title="Map"
-                src={`https://www.google.com/maps?q=${EVENT.mapsQuery}&output=embed`}
-                className="h-full w-full"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+    <main>
+        <!-- Hero Section -->
+        <section id="hero">
+            <div class="hero-content">
+                <h1>DataSphere 2025: Charting the Future with AI</h1>
+                <p>Connect, Learn, and Innovate with the Brightest Minds in Data Science. Join us for a full day of insightful talks, hands-on workshops, and networking.</p>
+                <a href="#register" class="btn">Register Now</a>
             </div>
-          </div>
-          <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-2 text-sm text-black/70"><Mail className="h-4 w-4"/> {EVENT.contactEmail}</div>
-            <div className="mt-1 flex items-center gap-2 text-sm text-black/70"><Phone className="h-4 w-4"/> {EVENT.contactPhone}</div>
-            <div className="mt-4">
-              <div className="text-sm font-semibold">Follow us</div>
-              <div className="mt-2 flex items-center gap-3 text-black/70">
-                <a href={EVENT.socials.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-black"><Instagram className="h-5 w-5"/></a>
-                <a href={EVENT.socials.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="hover:text-black"><Linkedin className="h-5 w-5"/></a>
-                <a href={EVENT.socials.twitter} target="_blank" rel="noreferrer" aria-label="Twitter / X" className="hover:text-black"><Twitter className="h-5 w-5"/></a>
-                <a href={EVENT.socials.youtube} target="_blank" rel="noreferrer" aria-label="YouTube" className="hover:text-black"><Youtube className="h-5 w-5"/></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
+        </section>
 
-      {/* FOOTER */}
-      <footer className="mt-10 border-t border-black/5 bg-white/70">
-        <div className="mx-auto max-w-7xl px-4 py-10 text-sm text-black/70">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>© {new Date().getFullYear()} Data Science Club — VIT Bhopal</div>
-            <div className="flex items-center gap-4">
-              <a href="#about" onClick={(e)=>handleSmoothScroll(e, '#about')} className="hover:opacity-80">About</a>
-              <a href="#speakers" onClick={(e)=>handleSmoothScroll(e, '#speakers')} className="hover:opacity-80">Speakers</a>
-              <a href="#schedule" onClick={(e)=>handleSmoothScroll(e, '#schedule')} className="hover:opacity-80">Schedule</a>
-              <a href="#register" onClick={(e)=>handleSmoothScroll(e, '#register')} className="hover:opacity-80">Register</a>
-              <a href="#venue" onClick={(e)=>handleSmoothScroll(e, '#venue')} className="hover:opacity-80">Venue</a>
+        <!-- About the Event Section -->
+        <section id="about">
+            <div class="container">
+                <h2 class="section-title">About The Event</h2>
+                <p class="section-subtitle">Discover what makes DataSphere 2025 a must-attend event for anyone passionate about data.</p>
+                <div class="about-content">
+                    <div class="about-text">
+                        <h3>Why Should You Attend?</h3>
+                        <p>DataSphere 2025 is the premier gathering for students, professionals, and enthusiasts in the field of Data Science and Artificial Intelligence. Our mission is to foster a community of learning and innovation.</p>
+                        <p>This year, we focus on the latest trends in generative AI, ethical data practices, and real-world applications of machine learning. You'll leave with actionable insights, a stronger network, and inspiration to tackle your next data challenge.</p>
+                        <ul>
+                            <li><strong>Learn</strong> from industry experts at the forefront of AI.</li>
+                            <li><strong>Network</strong> with peers, mentors, and potential employers.</li>
+                            <li><strong>Innovate</strong> through hands-on workshops and challenges.</li>
+                        </ul>
+                    </div>
+                    <div class="about-image">
+                        <img src="https://placehold.co/600x400/4f46e5/ffffff?text=Collaboration" alt="People collaborating on a data project">
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
+        </section>
 
-}
+        <!-- Speakers/Guests Section -->
+        <section id="speakers">
+            <div class="container">
+                <h2 class="section-title">Meet Our Speakers</h2>
+                <p class="section-subtitle">We are proud to host a diverse group of thought leaders and pioneers from the world of data science.</p>
+                <div class="speakers-grid">
+                    <!-- Speaker 1 -->
+                    <div class="speaker-card">
+                        <img src="https://placehold.co/150x150/e0e7ff/4f46e5?text=AA" alt="Speaker 1 Photo">
+                        <h3>Dr. Anya Sharma</h3>
+                        <p class="title">Lead AI Researcher, QuantumLeap Inc.</p>
+                        <p class="bio">Dr. Sharma is a leading voice in Natural Language Processing. Her keynote will explore the future of conversational AI.</p>
+                    </div>
+                    <!-- Speaker 2 -->
+                    <div class="speaker-card">
+                        <img src="https://placehold.co/150x150/e0e7ff/4f46e5?text=RK" alt="Speaker 2 Photo">
+                        <h3>Rohan Kumar</h3>
+                        <p class="title">Founder & CEO, DataViz Solutions</p>
+                        <p class="bio">Rohan turned his passion for data storytelling into a multi-million dollar startup. He'll share his entrepreneurial journey.</p>
+                    </div>
+                    <!-- Speaker 3 -->
+                    <div class="speaker-card">
+                        <img src="https://placehold.co/150x150/e0e7ff/4f46e5?text=PD" alt="Speaker 3 Photo">
+                        <h3>Prof. Priya Desai</h3>
+                        <p class="title">Head of CS, National Institute of Technology</p>
+                        <p class="bio">Professor Desai will conduct a deep-dive workshop on ethical frameworks for building responsible AI systems.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schedule/Agenda Section -->
+        <section id="schedule">
+            <div class="container">
+                <h2 class="section-title">Event Schedule</h2>
+                <p class="section-subtitle">A full day packed with learning and networking opportunities. Plan your day with our detailed agenda.</p>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Session Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="schedule-time">09:00 AM - 09:30 AM</td>
+                            <td class="schedule-session">
+                                <h4>Registration & Welcome Coffee</h4>
+                                <p>Check-in and network with fellow attendees.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="schedule-time">09:30 AM - 10:30 AM</td>
+                            <td class="schedule-session">
+                                <h4>Keynote: The Future of Conversational AI</h4>
+                                <p>By Dr. Anya Sharma</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="schedule-time">10:45 AM - 12:00 PM</td>
+                            <td class="schedule-session">
+                                <h4>Workshop: Building Ethical AI</h4>
+                                <p>By Prof. Priya Desai</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="schedule-time">12:00 PM - 01:00 PM</td>
+                            <td class="schedule-session">
+                                <h4>Lunch & Networking</h4>
+                                <p>Enjoy a catered lunch and connect with speakers and peers.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="schedule-time">01:00 PM - 02:00 PM</td>
+                            <td class="schedule-session">
+                                <h4>Talk: The Data-Driven Startup</h4>
+                                <p>By Rohan Kumar</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="schedule-time">02:15 PM - 03:30 PM</td>
+                            <td class="schedule-session">
+                                <h4>Panel Discussion: Data Science Careers in 2025</h4>
+                                <p>With all our speakers and special guests.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="schedule-time">03:30 PM - 04:00 PM</td>
+                            <td class="schedule-session">
+                                <h4>Closing Remarks & Awards</h4>
+                                <p>Announcing winners of the student data challenge.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Registration Section -->
+        <section id="register">
+            <div class="container">
+                <h2 class="section-title">Join Us!</h2>
+                <p class="section-subtitle">Seats are limited. Register now to secure your spot at DataSphere 2025 and be part of the future of data.</p>
+                <div class="registration-form-container">
+                    <form action="#" method="POST">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="role">I am a...</label>
+                            <select id="role" name="role">
+                                <option value="student">Student</option>
+                                <option value="professional">Working Professional</option>
+                                <option value="faculty">Faculty/Researcher</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn register-btn">Confirm Registration</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Venue/Contact Section -->
+        <section id="venue">
+            <div class="container">
+                <h2 class="section-title">Venue & Contact</h2>
+                <p class="section-subtitle">Find your way to the event and get in touch with our team.</p>
+                <div class="venue-content">
+                    <div class="venue-details">
+                        <h3>Event Location</h3>
+                        <ul class="venue-info">
+                            <li><i class="fa-solid fa-location-dot"></i> <span>University Auditorium<br>Kothri Kalan, Madhya Pradesh, India</span></li>
+                            <li><i class="fa-solid fa-calendar-days"></i> <span>September 27, 2025</span></li>
+                            <li><i class="fa-solid fa-envelope"></i> <span>contact@datasphere.club</span></li>
+                        </ul>
+                    </div>
+                    <div class="venue-map">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117924.58229782594!2d77.3323577747833!3d23.25993330349074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c428f8fd68fbd%3A0x2155716d572d4f8!2sBhopal%2C%20Madhya%20Pradesh!5e0!3m2!1sen!2sin!4v1700000000000" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-socials">
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            </div>
+            <p class="footer-copyright">&copy; 2025 DataSphere | Organized by the Data Science Club. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
