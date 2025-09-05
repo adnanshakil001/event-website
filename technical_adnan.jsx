@@ -56,7 +56,6 @@ const SESSIONS = [
   { time: "17:00", title: "Closing & Group Photo", speaker: "Organizers" }
 ];
 
-// ======= UTIL =======
 function useCountdown(targetISO) {
   const target = useMemo(() => new Date(targetISO).getTime(), [targetISO]);
   const [now, setNow] = useState(Date.now());
@@ -95,7 +94,6 @@ function Section({ id, title, subtitle, children }) {
   );
 }
 
-// ======= MAIN PAGE =======
 export default function EventSite() {
   const { days, hours, minutes, seconds } = useCountdown(EVENT.start);
   const [submitted, setSubmitted] = useState(false);
@@ -419,4 +417,5 @@ export default function EventSite() {
       </footer>
     </div>
   );
+
 }
